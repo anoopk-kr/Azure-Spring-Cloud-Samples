@@ -1,0 +1,26 @@
+pool:
+  name: 
+  demands: maven
+
+steps:
+- task: Maven@3
+  displayName: 'Maven java-8-sample/pom.xml'
+  inputs:
+    mavenPomFile: 'java-8-sample/pom.xml'
+    goals: 'package -D skipTests'
+    publishJUnitResults: false
+
+- task: AzureCLI@2
+  displayName: 'Azure CLI '
+  inputs:
+    azureSubscription: 'non-prod-resource-group-in-stock-devops'
+    scriptType: ps
+    scriptLocation: inlineScript
+    inlineScript: |
+     az extension add --name spring-cloud
+     
+     az spring-cloud app create -n  sampleapp -s instockspring -g InStock-DevOps  --is-public true
+     
+     cd java-8-sample
+     
+     az spring-cloud app deploy -n sampleapp --service instockspring --resource-group  InStock-DevOps  --jar-path  $(Build.SourcesDirectory)/java-8-sample/target/java8-ASC-demo-0.0.1-SNAPSHOT.jar
