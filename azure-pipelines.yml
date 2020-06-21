@@ -1,5 +1,5 @@
 pool:
-  name: 
+  name: Azure Pipelines
   demands: maven
 
 steps:
